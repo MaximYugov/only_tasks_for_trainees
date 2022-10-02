@@ -1,1 +1,1 @@
-# only_tasks_for_trainees
+# Выполненные заданий со стажировки в Only
