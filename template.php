@@ -1,44 +1,68 @@
-<?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
-/** @var array $arParams */
-/** @var array $arResult */
-/** @global CMain $APPLICATION */
-/** @global CUser $USER */
-/** @global CDatabase $DB */
-/** @var CBitrixComponentTemplate $this */
-/** @var string $templateName */
-/** @var string $templateFile */
-/** @var string $templateFolder */
-/** @var string $componentPath */
-/** @var CBitrixComponent $component */
-$this->setFrameMode(true);
+<?
+if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 ?>
-<div id="barba-wrapper">
-    <div class="article-list">
-<?if($arParams["DISPLAY_TOP_PAGER"]):?>
-	<?=$arResult["NAV_STRING"]?><br />
-<?endif;?>
-        <? if (!empty($arResult['ITEMS'])): ?>
-        <? foreach ($arResult['ITEMS'] as $arItem): ?>
-            <?
-            $this->AddEditAction($arItem['ID'], $arItem['EDIT_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_EDIT"));
-            $this->AddDeleteAction($arItem['ID'], $arItem['DELETE_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_DELETE"), array("CONFIRM" => GetMessage('CT_BNL_ELEMENT_DELETE_CONFIRM')));
-            ?>
-            <a class="article-item article-list__item" href="<?= $arItem['DETAIL_PAGE_URL'] ?>"
-               data-anim="anim-3"  id="<?=$this->GetEditAreaId($arItem['ID']);?>">
-                <div class="article-item__background"><img src="<?= $arItem['PREVIEW_PICTURE']['SRC'] ?>"
-                                                           data-src="xxxHTMLLINKxxx0.39186223192351520.41491856731872767xxx"
-                                                           alt=""/></div>
-                <div class="article-item__wrapper">
-                    <div class="article-item__title"><?= $arItem['NAME'] ?></div>
-                    <div class="article-item__content">
-                        <?= $arItem['PREVIEW_TEXT'] ?>
-                    </div>
-                </div>
-            </a>
-        <? endforeach; ?>
-        <? endif; ?>
-<?if($arParams["DISPLAY_BOTTOM_PAGER"]):?>
-	<?=$arResult["NAV_STRING"]?>
-<?endif;?>
+
+<?if ($arResult["isFormErrors"] == "Y"):?><?=$arResult["FORM_ERRORS_TEXT"];?><?endif;?>
+<?=$arResult["FORM_NOTE"]?>
+
+<?
+$arResult["REQUIRED_SIGN"] = '*';
+?>
+
+<div class="contact-form">
+    <div class="contact-form__head">
+        <div class="contact-form__head-title">Связаться</div>
+        <div class="contact-form__head-text">Наши сотрудники помогут выполнить подбор услуги и&nbsp;расчет цены с&nbsp;учетом
+            ваших требований
+        </div>
     </div>
+    <?=$arResult["FORM_HEADER"]?>
+    <div class="contact-form__form-inputs">
+		<?
+	foreach ($arResult["QUESTIONS"] as $FIELD_SID => $arQuestion)
+	{
+		if ($arQuestion['STRUCTURE'][0]['FIELD_TYPE'] == 'hidden')
+		{
+			echo $arQuestion["HTML_CODE"];
+		}
+		else
+		{
+			if ($arQuestion['STRUCTURE'][0]['FIELD_TYPE'] == 'text') {
+	?>
+		<div class="input contact-form__input"><label class="input__label" for="medicine_name">
+                <div class="input__label-text"><?=$arQuestion["CAPTION"]?><?if ($arQuestion["REQUIRED"] == "Y"):?><?=$arResult["REQUIRED_SIGN"];?><?endif;?></div>
+                <?=$arQuestion["HTML_CODE"]?>
+                <div class="input__notification">Поле должно содержать не менее 3-х символов</div>
+        </label></div>
+	<?
+			}
+			if ($arQuestion['STRUCTURE'][0]['FIELD_TYPE'] == 'textarea') {
+	?>
+	</div>
+	<div class="contact-form__form-message">
+        <div class="input"><label class="input__label" for="medicine_message">
+            <div class="input__label-text"><?=$arQuestion["CAPTION"]?><?if ($arQuestion["REQUIRED"] == "Y"):?><?=$arResult["REQUIRED_SIGN"];?><?endif;?></div>
+				<?=$arQuestion["HTML_CODE"]?>
+            <div class="input__notification"></div>
+        </label></div>
+    </div>
+        
+	<?
+			}
+		}
+	} //endwhile
+	?>
+        
+    <div class="contact-form__bottom">
+        <div class="contact-form__bottom-policy">Нажимая &laquo;Отправить&raquo;, Вы&nbsp;подтверждаете, что
+            ознакомлены, полностью согласны и&nbsp;принимаете условия &laquo;Согласия на&nbsp;обработку персональных
+            данных&raquo;.
+        </div>
+		<input type="hidden" name="web_form_apply" value="Y" />
+        <button class="form-button contact-form__bottom-button" data-success="Отправлено"
+                data-error="Ошибка отправки">
+            <div class="form-button__title"><?=htmlspecialcharsbx(trim($arResult["arForm"]["BUTTON"]) == '' ? GetMessage("FORM_ADD") : $arResult["arForm"]["BUTTON"]);?></div>
+        </button>
+    </div>
+    <?=$arResult["FORM_FOOTER"]?>
 </div>
